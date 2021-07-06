@@ -205,17 +205,18 @@ class ScrapeNews():
     self,
   ) -> typing.NoReturn:
     section = self.__section
-    f = ScrapeMetadata()
-    res = f(section)
-    pprint(res)
-    f = ScrapeKeyword()
-    res = f(section)
-    pprint(res)
-    f = ScrapeTag()
-    res = f(section)
-    pprint(res)
-    self.__news = None
-  
+    scrapes = (
+      ScrapeMetadata(),
+      ScrapeKeyword(),
+      ScrapeTag(),
+    )
+    self.__news = News(
+      self.__id,
+      *(
+        f(section)
+        for f in scrapes
+      ),
+    )
 
 
 
@@ -231,7 +232,8 @@ def main():
   id_ = 435656
 
   scrape = ScrapeNews()
-  scrape(id_)
+  res = scrape(id_)
+  print(res)
   
 
 
