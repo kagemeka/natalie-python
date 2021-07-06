@@ -1,7 +1,9 @@
 import bs4 
 import requests
 import typing
-
+from pprint import (
+  pprint,
+)
 
 import dataclasses
 from datetime import (
@@ -12,7 +14,7 @@ from datetime import (
 @dataclasses.dataclass
 class Metadata():
   title: str
-  date: datetime
+  datetime: datetime
   score: int
 
 
@@ -25,13 +27,51 @@ class ScrapeMetadata():
     self.__section = section
     self.__scrape()
     return self.__meta
+
+
+  def __get_title(
+    self,
+  ) -> typing.NoReturn:
+    s = self.__section.find(
+      class_='NA_article_title'
+    ).text
+    self.__title = s
+
+
+  def __get_date(
+    self,
+  ) -> typing.NoReturn:
+    s = self.__section.find(
+      class_='NA_article_date',
+    ).text
+    f = '%Y年%m月%d日 %H:%M'
+    dt = datetime.strptime(
+      s,
+      f,
+    )
+    self.__dt = dt
+    
+
+  def __get_score(
+    self,
+  ) -> typing.NoReturn:
+    s = self.__section.find(
+      class_='NA_article_score'
+    ).text 
+    self.__score = int(s)
   
 
   def __scrape(
     self,
   ) -> typing.NoReturn:
-    ...
-
+    self.__get_title()
+    self.__get_date()
+    self.__get_score()
+    self.__meta = Metadata(
+      self.__title,
+      self.__dt,
+      self.__score,
+    )
 
 
 
@@ -80,18 +120,28 @@ class ScrapeNews():
   ) -> News:
     self.__id = news_id
     self.__make_soup()
+    self.__find_section()
     self.__scrape()
     return self.__news
   
 
+  def __find_section(
+    self,
+  ) -> typing.NoReturn:
+    section = self.__soup.find(
+      class_='NA_article',
+    )
+    self.__section = section
+
+
   def __init__(
     self,
   ) -> typing.NoReturn:
-    ... 
     self.__base_url = (
-      'https://
-
-
+      'https://natalie.mu/'
+      'comic/news'
+    )
+    
 
   def __make_soup(
     self,
@@ -99,7 +149,7 @@ class ScrapeNews():
     url = self.__base_url
     id_ = self.__id
     response = requests.get(
-      f'{url}{id_}',
+      f'{url}/{id_}',
     )
     soup = bs4.BeautifulSoup(
       response.content,
@@ -111,7 +161,11 @@ class ScrapeNews():
   def __scrape(
     self,
   ) -> typing.NoReturn:
-    ...
+    section = self.__section
+    f = ScrapeMetadata()
+    res = f(section)
+    pprint(res)
+    self.__news = None
   
 
 
@@ -125,22 +179,10 @@ def main():
 
 
   id_ = 433741
-  
-  url = (
-    f'{base_url}news/{id_}'
-  )
 
-  response = requests.get(
-    url,
-  )
-  soup = bs4.BeautifulSoup(
-    response.content,
-    'html.parser',
-  )
-  section = soup.find(
-    class_='NA_article',
-  )
-  print(section.prettify())
+  scrape = ScrapeNews()
+  scrape(id_)
+  
 
 
 
