@@ -97,7 +97,24 @@ class ScrapeTag():
   def __scrape(
     self,
   ) -> typing.NoReturn:
-    ...
+    ls = self.__section.find(
+      class_='NA_taglist',
+    ).find_all('a')
+    tags = []
+    for elm in ls:
+      name = elm.text
+      url = elm.get('href')
+      categ, id_ = url.split(
+        '/',
+      )[-2:]
+      tags.append(Tag(
+        name,
+        categ,
+        int(id_),
+      ))
+    self.__tags = tags
+      
+
 
   
 
@@ -194,8 +211,9 @@ class ScrapeNews():
     f = ScrapeKeyword()
     res = f(section)
     pprint(res)
-    s = ScrapeTag()
+    f = ScrapeTag()
     res = f(section)
+    pprint(res)
     self.__news = None
   
 
