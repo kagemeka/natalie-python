@@ -88,7 +88,8 @@ class ScrapeNews():
     self,
   ) -> typing.NoReturn:
     ... 
-    self.__base_url: str
+    self.__base_url = (
+      'https://
 
 
 

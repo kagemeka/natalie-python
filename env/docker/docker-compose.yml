@@ -11,7 +11,7 @@ services:
     env_file:
       - common.env
     image: 
-      kagemeka/natarie-scrape
+      kagemeka/natalie-scrape
     restart: unless-stopped
     tty: true
     volumes:
