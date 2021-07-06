@@ -101,6 +101,30 @@ class ScrapeTag():
 
   
 
+import re
+
+class ScrapeKeyword():
+  def __call__(
+    self,
+    section: bs4.element.Tag,
+  ) -> typing.List[str]:
+    self.__section = section
+    self.__scrape()
+    return self.__keywords
+  
+
+  def __scrape(
+    self,
+  ) -> typing.NoReturn:
+    s = self.__section.find(
+      class_='NA_article_body',
+    ).find('p').text
+    ptn = re.compile(
+      r'「([^」]*)」',
+    )
+    ls = re.findall(ptn, s)
+    self.__keywords = ls
+    
 
     
 
@@ -109,6 +133,8 @@ class ScrapeTag():
 class News():
   news_id: int
   metadata: Metadata
+  keywords: typing.List[str]
+  tags: typing.List[Tag]
 
 
 
@@ -165,6 +191,11 @@ class ScrapeNews():
     f = ScrapeMetadata()
     res = f(section)
     pprint(res)
+    f = ScrapeKeyword()
+    res = f(section)
+    pprint(res)
+    s = ScrapeTag()
+    res = f(section)
     self.__news = None
   
 
@@ -179,6 +210,7 @@ def main():
 
 
   id_ = 433741
+  id_ = 435656
 
   scrape = ScrapeNews()
   scrape(id_)
