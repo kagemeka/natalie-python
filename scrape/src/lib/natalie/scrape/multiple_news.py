@@ -6,6 +6,9 @@ from datetime import (
 import dataclasses
 import requests
 import bs4
+from tqdm import (
+  trange,
+)
 from .news import (
   ScrapeNews,
   News,
@@ -91,7 +94,8 @@ class ScrapeMultipleNews():
       f'{tag.tag_id}/page'
     )
     c = self.__condition
-    for i in range(c.max_page):
+    n = c.max_page
+    for i in trange(n):
       ls = self.__ids_per_page(
         i + 1,
       )
