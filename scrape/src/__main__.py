@@ -11,8 +11,45 @@ import (
 from lib.natalie.scrape.news \
 import (
   Tag,
+  News,
 ) 
 
+
+
+import dataclasses
+import typing
+import pandas as pd
+
+
+
+@dataclasses.dataclass
+class AdamDF():
+  keyword: pd.DataFrame
+  
+
+
+class MakeAdamDF():
+  def __call__(
+    self,
+    news: News, 
+  ) -> AdamDF:
+    self.__news = news
+    self.__make()
+    return self.__df
+  
+
+  def __make(
+    self,
+  ) -> typing.NoReturn:
+    news = self.__news
+    data = {
+      'category': news.category,
+      'news_id': news.news_id,
+      'keyword': news.keywords,
+    }
+    self.__df = pd.DataFrame(
+      data,
+    )
 
 
 def main():
@@ -34,8 +71,11 @@ def main():
       max_page=1 << 3,
     ),
   )
+  make = MakeAdamDF()
   for x in news:
-    print(x)
+    # print(x)
+    df = make(x)
+    print(df)
 
   
 
