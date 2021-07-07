@@ -1,94 +1,83 @@
-from lib.natalie.scrape import(
-  ScrapeMultipleNews,
-  Category,
+from lib.adam import (
+  MakeAdamDFs,
 )
-from \
-  lib.natalie.scrape \
-  .multiple_news \
-import (
-  Condition,
+
+
+from lib.adam import (
+  AdamDF,
 )
-from lib.natalie.scrape.news \
-import (
-  Tag,
-  News,
-) 
 
 
-
-import dataclasses
 import typing
-import pandas as pd
+from datetime import (
+  datetime,
+)
+import boto3 
 
 
-
-@dataclasses.dataclass
-class AdamDF():
-  keyword: pd.DataFrame
-  
-
-
-class MakeAdamDF():
+class StoreDF():
   def __call__(
     self,
-    news: News, 
-  ) -> AdamDF:
-    self.__news = news
-    self.__make()
-    return self.__df
-  
+    df: AdamDF,
+  ) -> typing.NoReturn:
+    self.__df = df
+    self.__add_timestamp()
+    self.__save()
+    self.__upload()
 
-  def __make(
+
+  def __init__(
     self,
   ) -> typing.NoReturn:
-    news = self.__news
-    data = {
-      'category': news.category,
-      'news_id': news.news_id,
-      'keyword': news.keywords,
-    }
-    self.__df = pd.DataFrame(
-      data,
+    dt = datetime.now()
+    date = dt.date()
+    self.__dt = dt
+    self.__save_dir = '/tmp/'
+    self.__upload_dir = (
+      f'natalie/{date}/'
     )
 
-
-class MakeAdamDFs():
-  def __call__(
-    self,
-  ) -> AdamDF:
-    self.__scrape()
-    self.__make()
-    return self.__df
   
-
-  def __scrape(
+  def __add_timestamp(
     self,
   ) -> typing.NoReturn:
-    f = ScrapeMultipleNews()
-    tag = Tag(
-      name='新連載',
-      category='tag',
-      tag_id=43,
+    df = self.__df
+    dt = self.__dt
+    df.keyword['datetime'] = dt
+  
+
+  def __save(
+    self,
+  ) -> typing.NoReturn:
+    d = self.__save_dir
+    keyword_path = (
+      f'{d}keywords.csv'
     )
-    self.__news = f(
-      Category.COMIC,
-      tag,
-      Condition(
-        max_page=1 << 3,
-      ),
+    df = self.__df
+    df.keyword.to_csv(
+      keyword_path,
+      index=False,
+    )
+    self.__keyword_path = (
+      keyword_path
     )
   
 
-  def __make(
+  def __upload(
     self,
   ) -> typing.NoReturn:
-    f =  MakeAdamDF()
-    ls = [
-      f(news)
-      for news in self.__news
-    ]
-    self.__df = pd.concat(ls)
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(
+      'av-adam-entrance',
+    )
+    d = self.__upload_dir
+    bucket.Object(
+      f'{d}keywords.csv',
+    ).upload_file(
+      self.__keyword_path,
+    )
 
+    
 
 def main():
   base_url = (
@@ -98,6 +87,8 @@ def main():
 
   make = MakeAdamDFs()
   df = make()
+  store = StoreDF()
+  store(df)
   print(df)
 
 
