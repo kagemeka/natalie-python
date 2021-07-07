@@ -6,7 +6,7 @@ def main():
   Adam()()
 
 
-def lambda_hanlder(
+def lambda_handler(
   event,
   context,
 ):  
