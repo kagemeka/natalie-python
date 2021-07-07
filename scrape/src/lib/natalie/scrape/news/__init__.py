@@ -13,11 +13,15 @@ from .metadata import (
   Metadata,
   ScrapeMetadata,
 )
+from .. import (
+  Category,
+)
 
 
 
 @dataclasses.dataclass
 class News():
+  category: Category
   news_id: int
   metadata: Metadata
   keywords: typing.List[str]
@@ -48,10 +52,13 @@ class ScrapeNews():
 
   def __init__(
     self,
+    category: Category,
   ) -> typing.NoReturn:
+    s = category.name.lower()
+    self.__category = s
     self.__base_url = (
       'https://natalie.mu/'
-      'comic/news'
+      f'{s}/news'
     )
     
 
@@ -80,6 +87,7 @@ class ScrapeNews():
       ScrapeTag(),
     )
     self.__news = News(
+      self.__category,
       self.__id,
       *(
         f(section)

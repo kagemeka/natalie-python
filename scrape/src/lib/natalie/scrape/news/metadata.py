@@ -15,7 +15,9 @@ from datetime import (
 class Metadata():
   title: str
   datetime: datetime
-  score: int
+  score: typing.Optional[
+    int
+  ] = None
 
 
 
@@ -57,9 +59,12 @@ class ScrapeMetadata():
   ) -> typing.NoReturn:
     s = self.__section.find(
       class_='NA_article_score'
-    ).text 
-    self.__score = int(s)
-  
+    )
+    self.__score = (
+      int(s.text) if s
+      else None
+    )
+    
 
   def __scrape(
     self,
