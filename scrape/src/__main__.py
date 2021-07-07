@@ -52,32 +52,53 @@ class MakeAdamDF():
     )
 
 
+class MakeAdamDFs():
+  def __call__(
+    self,
+  ) -> AdamDF:
+    self.__scrape()
+    self.__make()
+    return self.__df
+  
+
+  def __scrape(
+    self,
+  ) -> typing.NoReturn:
+    f = ScrapeMultipleNews()
+    tag = Tag(
+      name='新連載',
+      category='tag',
+      tag_id=43,
+    )
+    self.__news = f(
+      Category.COMIC,
+      tag,
+      Condition(
+        max_page=1 << 3,
+      ),
+    )
+  
+
+  def __make(
+    self,
+  ) -> typing.NoReturn:
+    f =  MakeAdamDF()
+    ls = [
+      f(news)
+      for news in self.__news
+    ]
+    self.__df = pd.concat(ls)
+
+
 def main():
   base_url = (
     'https://natalie.mu/comic/'
   )
 
 
-  f = ScrapeMultipleNews()
-  tag = Tag(
-    name='新連載',
-    category='tag',
-    tag_id=43,
-  )
-  news = f(
-    Category.COMIC,
-    tag,
-    Condition(
-      max_page=1 << 3,
-    ),
-  )
-  make = MakeAdamDF()
-  for x in news:
-    # print(x)
-    df = make(x)
-    print(df)
-
-  
+  make = MakeAdamDFs()
+  df = make()
+  print(df)
 
 
 
