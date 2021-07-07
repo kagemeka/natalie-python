@@ -1,2 +1,2 @@
-# natarie
-API for Natarie
+# natalie
+API for Natalie
