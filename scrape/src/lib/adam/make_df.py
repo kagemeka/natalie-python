@@ -2,17 +2,18 @@
 import dataclasses
 import typing
 import pandas as pd
-from lib.natalie.scrape import(
+from kgmk.natalie.scrape \
+import(
   ScrapeMultipleNews,
   Category,
 )
 from \
-  lib.natalie.scrape \
+  kgmk.natalie.scrape \
   .multiple_news \
 import (
   Condition,
 )
-from lib.natalie.scrape.news \
+from kgmk.natalie.scrape.news \
 import (
   Tag,
   News,
