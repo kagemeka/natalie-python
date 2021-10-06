@@ -7,9 +7,10 @@ on:
     tags: 
       - v*
 
-  release: [created]
-  workflow_dispatch:
+  release:
+    types: [created]
 
+  workflow_dispatch:
   
 jobs:
   build:
