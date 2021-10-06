@@ -1,3 +1,5 @@
+import typing
+
 from lib.adam import (
   Adam
 )
@@ -6,10 +8,7 @@ def main():
   Adam()()
 
 
-def lambda_handler(
-  event,
-  context,
-):  
+def lambda_handler(event, context) -> typing.NoReturn:  
   main()
 
 
