@@ -6,6 +6,10 @@ on:
     #   - main
     tags: 
       - v*
+
+  release: [created]
+  workflow_dispatch:
+
   
 jobs:
   build:
