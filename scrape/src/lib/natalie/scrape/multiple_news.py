@@ -37,7 +37,7 @@ class ScrapeMultipleNews():
     self.__tag = tag
     for i in self.__get_news_ids():
       news = scrape_news(category=self.__category, news_id=i)
-      if news.metadata.dt < self.__cfg.start_time: return 
+      if news.metadata.datetime < self.__cfg.start_time: return
       yield news
 
 
